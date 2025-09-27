@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Location Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            width: 100%;
+            background: #003366;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        main {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 600px;
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input, button {
+            padding: 8px;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        input {
+            width: calc(100% - 20px);
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background: #003366;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0055a5;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            overflow-x: auto;
+        }
+        .note {
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 10px;
+        }
+        .logout {
+            float: right;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+
+    <script>
+        async function byZip(e) {
+            e.preventDefault();
+            const zip = document.getElementById('zip').value;
+            const res = await fetch('/api/search/by-zip?zip=' + encodeURIComponent(zip));
+            const json = await res.json();
+            document.getElementById('zipResult').textContent = JSON.stringify(json, null, 2);
+        }
+        async function byCity(e) {
+            e.preventDefault();
+            const city = document.getElementById('city').value;
+            const res = await fetch('/api/search/by-city?city=' + encodeURIComponent(city));
+            const json = await res.json();
+            document.getElementById('cityResult').textContent = JSON.stringify(json, null, 2);
+        }
+    </script>
+</head>
+<body>
+<header>
+    <h1>Location Search</h1>
+    <a href="/logout" class="logout">Logout</a>
+</header>
+
+<main>
+    <section>
+        <h2>Search by ZIP Code</h2>
+        <form onsubmit="byZip(event)">
+            <input id="zip"
+                   name="zip"
+                   type="number"
+                   inputmode="numeric"
+                   pattern="[0-9]*"
+                   placeholder="e.g. 24937"
+                   required>
+            <button type="submit">Search</button>
+        </form>
+        <pre id="zipResult"></pre>
+    </section>
+
+    <section>
+        <h2>Search by City</h2>
+        <form onsubmit="byCity(event)">
+            <input id="city"
+                   name="city"
+                   type="text"
+                   placeholder="e.g. Flensburg"
+                   required>
+            <button type="submit">Search</button>
+        </form>
+        <pre id="cityResult"></pre>
+    </section>
+
+    <p class="note">Only exact matches yield results. City name matching is case-insensitive.</p>
+</main>
+</body>
+</html>
